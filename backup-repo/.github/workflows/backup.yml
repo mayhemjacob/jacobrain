@@ -1,0 +1,34 @@
+# Backup diario de Jacob's Brain → notes/*.md en este repo privado.
+# Secretos del repo: BRAIN_URL (https://brain.jacobomiralles.com) y BACKUP_TOKEN.
+name: backup
+
+on:
+  schedule:
+    - cron: "17 3 * * *"   # cada día a las 03:17 UTC
+  workflow_dispatch: {}     # botón "Run workflow" para forzar un backup
+
+permissions:
+  contents: write
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Descargar export
+        env:
+          BRAIN_URL: ${{ secrets.BRAIN_URL }}
+          BACKUP_TOKEN: ${{ secrets.BACKUP_TOKEN }}
+        run: |
+          curl --fail --silent --show-error \
+            -H "Authorization: Bearer $BACKUP_TOKEN" \
+            "$BRAIN_URL/export" -o export.json
+      - name: Escribir notas
+        run: node scripts/write-export.mjs export.json && rm export.json
+      - name: Commit
+        run: |
+          git config user.name "jacobrain-backup"
+          git config user.email "actions@users.noreply.github.com"
+          git add notes
+          git diff --cached --quiet || git commit -m "backup $(date -u +%Y-%m-%d)"
+          git push

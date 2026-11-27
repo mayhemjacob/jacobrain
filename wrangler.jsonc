@@ -1,0 +1,48 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "jacobrain",
+	"main": "src/index.ts",
+	"compatibility_date": "2026-11-17",
+	"compatibility_flags": ["nodejs_compat"],
+	"vars": {
+		// URL a la que se conectan los clientes MCP. Cada token OAuth queda ligado a ella.
+		// En local se sobreescribe desde .dev.vars.
+		"MCP_RESOURCE": "https://brain.jacobomiralles.com/mcp",
+		// Único usuario de GitHub que puede entrar.
+		"ALLOWED_GITHUB_LOGIN": "mayhemjacob"
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "jacobrain",
+			"database_id": "<D1-ID>",
+			"migrations_dir": "migrations"
+		}
+	],
+	"kv_namespaces": [
+		{
+			"binding": "OAUTH_KV",
+			"id": "<KV-ID>"
+		}
+	],
+	"routes": [{ "pattern": "brain.jacobomiralles.com", "custom_domain": true }],
+	"workers_dev": true,
+	"observability": { "enabled": true },
+	"dev": { "port": 8788 },
+	/**
+	 * Secretos (npx wrangler secret put <NOMBRE>):
+	 *  GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET  → GitHub OAuth App
+	 *  COOKIE_ENCRYPTION_KEY                   → openssl rand -hex 32
+	 *  BACKUP_TOKEN                            → /export y /import (GitHub Action y restauración)
+	 *  CAPTURE_TOKEN                           → POST /capture (Pally, atajos, automatizaciones)
+	 */
+	"secrets": {
+		"required": [
+			"GITHUB_CLIENT_ID",
+			"GITHUB_CLIENT_SECRET",
+			"COOKIE_ENCRYPTION_KEY",
+			"BACKUP_TOKEN",
+			"CAPTURE_TOKEN"
+		]
+	}
+}
