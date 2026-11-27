@@ -74,7 +74,14 @@ export async function fetchUpstreamAuthToken({
 	const body = await resp.formData();
 	const accessToken = body.get("access_token") as string;
 	if (!accessToken) {
-		return [null, new Response("Missing access token", { status: 400 })];
+		// GitHub responde 200 con error=... cuando el client id/secret o el code no valen.
+		const error = body.get("error") ?? "unknown";
+		const description = body.get("error_description") ?? "";
+		console.error("GitHub token exchange failed:", error, description);
+		return [
+			null,
+			new Response(`No se pudo completar el login con GitHub: ${error}. ${description}`, { status: 400 }),
+		];
 	}
 	return [accessToken, null];
 }
