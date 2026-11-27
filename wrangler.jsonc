@@ -15,14 +15,14 @@
 		{
 			"binding": "DB",
 			"database_name": "jacobrain",
-			"database_id": "<D1-ID>",
+			"database_id": "2ccc84cb-473c-4af7-9f51-66e1899ee444",
 			"migrations_dir": "migrations"
 		}
 	],
 	"kv_namespaces": [
 		{
 			"binding": "OAUTH_KV",
-			"id": "<KV-ID>"
+			"id": "662428d5435c4b16981c2d7f23978f93"
 		}
 	],
 	"routes": [{ "pattern": "brain.jacobomiralles.com", "custom_domain": true }],
